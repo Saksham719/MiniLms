@@ -1,0 +1,23 @@
+# Node / Vite
+frontend/**/node_modules/
+frontend/**/dist/
+frontend/**/.vite/
+*.log
+*.local
+
+# Dotnet
+backend/**/bin/
+backend/**/obj/
+*.user
+*.suo
+*.svclog
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# SQLite DBs (keep if you want local data out of Git)
+backend/**/minilms.db
+backend/**/minilms.db-shm
+backend/**/minilms.db-wal

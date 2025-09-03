@@ -1,0 +1,94 @@
+:root{
+  /* Theme */
+  --bg:#0b1020;
+  --surface:#121937;
+  --surface-2:#0f1731;
+  --muted:#1a234a;
+  --text:#e8eeff;
+  --text-dim:#b8c4ff;
+  --primary:#7aa2ff;
+  --primary-600:#5e8eff;
+  --success:#2ecb9a;
+  --warning:#ffcd70;
+  --danger:#ff6b6b;
+  --border:#273262;
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow: 0 14px 48px rgba(0,0,0,.38);
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0; color:var(--text);
+  background:
+    radial-gradient(1200px 800px at 10% -20%, #1a2360 0%, transparent 60%),
+    radial-gradient(900px 600px at 90% 0%, #15204d 0%, transparent 60%),
+    var(--bg);
+  font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+}
+
+.container{max-width:1100px;margin:28px auto;padding:0 16px}
+
+/* Appbar */
+.appbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 16px;margin:18px 0;
+  background:linear-gradient(180deg,#18214a 0%, #121937 70%);
+  border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
+}
+.brand{display:flex;align-items:center;gap:10px}
+.badge-dot{width:10px;height:10px;border-radius:50%;background:var(--success)}
+.brand h1{margin:0;font-size:20px;letter-spacing:.3px}
+
+/* Card */
+.card{
+  background:linear-gradient(180deg,#0f1633 0%, #0c122a 90%);
+  border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--shadow); padding:16px;
+}
+
+/* Inputs & buttons */
+.input, .select, .btn{
+  height:42px; border-radius:12px; border:1px solid var(--border);
+  background:var(--muted); color:var(--text); padding:0 12px; outline:none;
+}
+.input::placeholder{color:var(--text-dim)}
+.select{padding-right:30px}
+.btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.btn:hover{filter:brightness(1.04)} .btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--primary); border-color:var(--primary-600); color:#0b1020}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text)}
+.btn-danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.btn-small{height:36px;padding:0 10px;border-radius:10px}
+.btn-outline{background:transparent;border:1px solid var(--border)}
+
+/* Toolbar / filters */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 14px}
+.toolbar .spacer{flex:1}
+
+/* Table */
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:var(--radius);background:rgba(18,25,55,.55)}
+table{width:100%;border-collapse:separate;border-spacing:0}
+thead th{
+  position:sticky;top:0;background:#0f1634d9;backdrop-filter:blur(6px);
+  text-align:left;padding:12px;border-bottom:1px solid var(--border);font-weight:600;color:var(--text-dim)
+}
+tbody td{padding:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+tbody tr:hover{background:rgba(122,162,255,.06)}
+
+/* Grid cards */
+.grid{display:grid;gap:14px}
+@media (min-width:700px){ .grid{grid-template-columns: repeat(2,1fr)} }
+@media (min-width:1000px){ .grid{grid-template-columns: repeat(3,1fr)} }
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid transparent}
+.badge.ok{color:#a6f3d9;background:rgba(46,203,154,.10);border-color:#1a7a5c}
+.badge.warn{color:#ffe19c;background:rgba(255,205,112,.10);border-color:#a67d27}
+.badge.info{color:#b8c4ff;background:rgba(122,162,255,.10);border-color:#3d58a5}
+
+/* Empty/loader */
+.empty{color:var(--text-dim);text-align:center;padding:30px}
+.spinner{width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:var(--primary);animation:spin 1s linear infinite}
+@keyframes spin { to { transform:rotate(360deg) } }
