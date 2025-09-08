@@ -1,64 +1,48 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/client";
 import { Link } from "react-router-dom";
-import Card from "../ui/Card";
-import Button from "../ui/Button";
-import Input from "../ui/Input";
-import Badge from "../ui/Badge";
-import Empty from "../ui/Empty";
-import Spinner from "../ui/Spinner";
-import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function AdminCourseList() {
   const qc = useQueryClient();
-  const [q,setQ]=useState("");
-  const { data, isLoading } = useQuery({
-    queryKey:["admin-courses", q],
-    queryFn: async ()=> (await api.get("/courses", { params: { search: q || undefined } })).data
+  const { data } = useQuery({
+    queryKey: ["admin-courses"],
+    queryFn: async () => (await api.get("/courses")).data,
   });
 
-  const remove = async (id)=>{
-    if (!confirm("Delete course?")) return;
+  const remove = async (id) => {
+    if (!confirm("Are you sure you want to delete this course?")) return;
     await api.delete(`/courses/${id}`);
-    qc.invalidateQueries({ queryKey:["admin-courses"] });
+    toast.success("Course deleted successfully");
+    qc.invalidateQueries({ queryKey: ["admin-courses"] });
   };
 
   return (
-    <Card>
-      <div className="toolbar">
-        <Input placeholder="Search by title…" value={q} onChange={e=>setQ(e.target.value)} />
-        <span className="spacer" />
-        <Link to="/admin/courses/new" className="btn btn-primary btn-small">+ New Course</Link>
+    <div style={{ maxWidth: 2000,maxHeight:100, margin: "60px auto" }}>
+      <h2 className="admin">Admin Courses</h2>
+      <Link to="/admin/courses/new" className="btn btn-primary" style={{ marginTop: 20 }}>
+        + Add New Course
+      </Link>
+      <div style={{ display: "grid", gap: 30, marginTop:30, gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+        {data?.items?.map((c) => (
+          <div key={c.id} className="card" style={{ position: "relative" }}>
+            <h3>{c.title}</h3>
+            <p style={{ color: "var(--text-secondary)" }}>
+              {c.category} · {c.level}
+            </p>
+            <p>{c.description?.slice(0, 100)}...</p>
+            <div style={{ display: "flex", gap: 22, marginTop: 16 }}>
+              <Link to={`/admin/courses/${c.id}`} className="btn btn-small btn-success">
+                Edit
+              </Link>
+              <button onClick={() => remove(c.id)} className="btn btn-small btn-danger">
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+        {!data?.items?.length && <div className="empty">No courses found</div>}
       </div>
-
-      <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th><th>Meta</th><th>State</th><th style={{width:160}}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr><td colSpan="4" className="empty"><Spinner/> Loading…</td></tr>
-            ) : data?.items?.length ? (
-              data.items.map(c=>(
-                <tr key={c.id}>
-                  <td style={{fontWeight:600}}>{c.title}</td>
-                  <td>{(c.category || "General")} · {(c.level || "N/A")} · {(c.durationMinutes || 0)} mins</td>
-                  <td>{c.isPublished ? <Badge tone="ok">Published</Badge> : <Badge tone="warn">Draft</Badge>}</td>
-                  <td style={{display:"flex",gap:8}}>
-                    <Link className="btn btn-small" to={`/admin/courses/${c.id}`}>Edit</Link>
-                    <Button className="btn-small" variant="danger" onClick={()=>remove(c.id)}>Delete</Button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr><td colSpan="4" className="empty"><Empty>No courses found.</Empty></td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </Card>
+    </div>
   );
 }
