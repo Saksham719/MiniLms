@@ -62,16 +62,3 @@ Navigate to frontend folder:
 
 🔹 Logout
      -   Ends session and redirects user to Login page.
-
-
-# 📸 Deliverables
-
-Screenshots should be added to README:
-
-Login Page
-
-Register Page
-
-Catalog (Student view)
-
-Admin Dashboard (Add/Edit/Delete courses)
