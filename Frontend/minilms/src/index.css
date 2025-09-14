@@ -1,15 +1,19 @@
+/* =========================
+   VARIABLES & BASE STYLES
+========================= */
 :root {
-  --bg: #121d36;            /* Background dark color */
-  --surface: #1f2a44;       /* Card background */
-  --text-primary: #e5ecff;   /* Text color */
-  --text-secondary: #c5d3ff; /* Light text color */
-  --accent: #7aa2ff;         /* Accent color for buttons, links, etc. */
-  --success: #39d98a;        /* Success messages */
-  --warning: #ffcd70;        /* Warning messages */
-  --error: #ff6b6b;          /* Error messages */
-  --border: #2a3a56;         /* Border color */
-  --radius: 12px;            /* Rounded corners */
-  --shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Soft shadow */
+  --bg: #f9fafb;              /* Light background */
+  --surface: #ffffff;          /* Card / surface color */
+  --text-primary: #111827;     /* Main text (dark) */
+  --text-secondary: #6b7280;   /* Secondary text */
+  --accent: #739aee;           /* Primary accent color */
+  --success: #16a34a;          /* Success messages */
+  --warning: #f59e0b;          /* Warning messages */
+  --error: #6b7280;            /* Error messages */
+  --border: #e5e7eb;           /* Border color */
+  --radius: 8px;               /* Rounded corners */
+  --shadow: 0 4px 12px rgba(0,0,0,0.1); /* Card shadow */
+  --nav-height: 60px;          /* Navbar height */
 }
 
 * {
@@ -22,76 +26,255 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--bg);
   color: var(--text-primary);
-  padding: 16px;
+  line-height: 1.6;
 }
 
+/* =========================
+   HEADINGS & LINKS
+========================= */
 h1, h2, h3 {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 a {
   text-decoration: none;
   color: var(--accent);
+  transition: 0.3s;
 }
 
 a:hover {
   color: var(--success);
 }
 
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: var(--radius);
-  padding: 10px 18px;
-  background-color: var(--accent);
+/* =========================
+   NAVBAR
+========================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--nav-height);
+  padding: 0 2rem;
+  background-color: var(--surface);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar .logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.navbar .nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.navbar .nav-links a {
+  font-weight: 500;
   color: var(--text-primary);
-  transition: background-color 0.3s ease;
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-links a:hover {
+  color: var(--accent);
+}
+
+/* Action buttons on navbar */
+.navbar .actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.navbar button {
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.navbar .btn-login,
+.navbar .btn-register {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+
+.navbar .btn-login:hover,
+.navbar .btn-register:hover {
+  background-color: #1d4ed8; /* Darker accent on hover */
+}
+
+.navbar .btn-logout {
+  background-color: var(--error);
+  color: #ffffff;
+  border: none;
+}
+
+.navbar .btn-logout:hover {
+  background-color: #ebe0e0;
+}
+
+/* Responsive Navbar for mobile */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 0.5rem;
+    height: auto;
+    padding: 1rem;
+  }
+
+  .navbar .nav-links {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .navbar .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .navbar .actions button {
+    width: 100%;
+  }
+}
+
+/* =========================
+   BUTTONS
+========================= */
+button, .btn {
+  cursor: pointer;
+  border-radius: 0rem;
+  border: 1px solid var(--border);
+  padding: 12px 20px;
   font-size: 14px;
   box-shadow: var(--shadow);
+  transition: all 0.3s ease;
 }
 
-button:hover {
-  background-color: var(--success);
+.btn-back{
+  margin-top: 2rem !important;
+  color: black;
 }
 
-button:disabled {
+.navbar{
+  background-color: var(--surface);
+}
+
+.btn-view{
+  background-color: var(--text-secondary);
+  color: #ffffff;
+
+  border-radius: 0rem;
+  border: none;
+}
+button:hover, .btn:hover {
+  transform: translateY(-2px);
+}
+
+button:active, .btn:active {
+  transform: translateY(1px);
+}
+
+button:disabled, .btn:disabled {
   background-color: var(--border);
   cursor: not-allowed;
 }
 
+.btn-delete {
+  background-color: var(--error);
+  color: #ffffff;
+  border-radius: 0rem;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-radius: 0rem;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-danger {
+  background-color: var(--error);
+  color: #ffffff;
+}
+
+.btn-ghost {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.admin{
+  margin-bottom: 1rem;
+}
+.btn-ghost:hover {
+  background-color: var(--surface);
+}
+
+/* =========================
+   INPUTS & FORMS
+========================= */
 input, select, textarea {
   width: 100%;
   padding: 12px;
-  margin: 8px 0;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
+  margin: 6px 0;
   border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
   color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
   outline: none;
+  background-color: #f3f4f6;
 }
 
 input::placeholder, textarea::placeholder {
   color: var(--text-secondary);
 }
 
-/* General Layout */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* =========================
+   CARDS & TASKS
+========================= */
 .card {
   background-color: var(--surface);
-  padding: 16px;
+  padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
 }
 
 .card h3 {
   font-size: 18px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .card p {
@@ -104,47 +287,11 @@ input::placeholder, textarea::placeholder {
   font-size: 12px;
 }
 
-.card button:hover {
-  background-color: var(--success);
-}
-
-/* Button and Input styling */
-button, input, select, textarea {
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  background-color: var(--success);
-}
-
-input:focus, select:focus, textarea:focus {
-  border-color: var(--accent);
-  outline: none;
-}
-
-.filters {
-  display: flex;
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.filters input, .filters select {
-  width: auto;
-}
-
-.filters button {
-  align-self: flex-end;
-}
-
-/* Admin Pages Styling */
-.empty {
-  color: var(--text-secondary);
-  text-align: center;
-  padding: 40px;
-}
-
+/* =========================
+   LISTS & EMPTY STATES
+========================= */
 ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
 }
 
@@ -155,118 +302,29 @@ li {
   border-bottom: 1px solid var(--border);
 }
 
-h2, h3 {
-  color: var(--accent);
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-/* Button Styles */
-button {
-  cursor: pointer;
-  border-radius: var(--radius);
-  padding: 12px 20px;
-  background-color: var(--accent);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease;
-  font-size: 14px;
-  box-shadow: var(--shadow);
-}
-
-button:hover {
-  background-color: var(--success);
-}
-
-button:disabled {
-  background-color: var(--border);
-  cursor: not-allowed;
-}
-
-.btn-small {
-  padding: 8px 16px;
-  font-size: 12px;
-}
-
-/* Enhanced Button Styling */
-.btn-primary {
-  padding: 5px 10px;
-  font-size: 16px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #7aa2ff, #39d98a);
-  color: var(--text-primary);
-  border-radius: var(--radius);
-  border: none;
-  margin-top: 4rem !important;
-  margin-bottom: 20rem;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  transition: all 0.3s ease;
+.empty {
   text-align: center;
-}
-
-.admin{
-  margin-bottom: 1rem;
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #39d98a, #7aa2ff);
-  transform: translateY(-3px);
-}
-
-.btn-primary:active {
-  transform: translateY(1px);
-}
-
-.btn-primary:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(57, 217, 138, 0.4); /* Focus outline */
-}
-
-.btn-primary.disabled {
-  background: var(--border);
-  cursor: not-allowed;
-}
-
-/* For small screens */
-@media (max-width: 768px) {
-  .btn-primary {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-}
-
-
-.btn-danger {
-  background-color: var(--error);
-  color: var(--text-primary);
-}
-
-.btn-ghost {
-  background-color: transparent;
-  border: 1px solid var(--border);
   color: var(--text-secondary);
+  padding: 40px;
 }
 
-.btn-ghost:hover {
-  background-color: var(--surface);
-}
-
-/* Grid layout for Course cards in Admin */
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
 @media (max-width: 768px) {
-  .card {
-    padding: 12px;
-    gap: 8px;
-  }
   .filters {
     flex-direction: column;
     gap: 12px;
   }
-}
 
-/* Input focus effects */
-input:focus, textarea:focus {
-  border: 1px solid var(--accent);
-  background-color: #e5e5e5;
+  .card {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
 }

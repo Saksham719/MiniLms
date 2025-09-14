@@ -15,7 +15,7 @@ export default function Register() {
     try {
       await register(fullName, email, password);
       toast.success("Registered");
-      nav("/login");
+      nav("/");
     } catch (err) {
       toast.error(err.response?.data || "Failed");
     }

@@ -29,7 +29,7 @@ export default function CourseCatalog() {
                 <h3>{c.title}</h3>
                 <p style={{ color: "var(--text-secondary)" }}>{c.category} · {c.level}</p>
               </div>
-              <Link to={`/courses/${c.id}`} className="btn btn-small">View</Link>
+              <Link to={`/courses/${c.id}`} className="btn btn-view">View</Link>
             </div>
             <p>{c.description?.slice(0, 100)}...</p>
           </div>
@@ -37,5 +37,6 @@ export default function CourseCatalog() {
         {!data?.items?.length && <div className="empty">No courses available</div>}
       </div>
     </div>
+    
   );
 }

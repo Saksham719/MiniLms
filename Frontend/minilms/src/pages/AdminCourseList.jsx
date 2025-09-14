@@ -18,9 +18,9 @@ export default function AdminCourseList() {
   };
 
   return (
-    <div style={{ maxWidth: 2000,maxHeight:100, margin: "60px auto" }}>
+    <div style={{ maxWidth: 1000,maxHeight:100, margin: "60px auto" }}>
       <h2 className="admin">Admin Courses</h2>
-      <Link to="/admin/courses/new" className="btn btn-primary" style={{ marginTop: 20 }}>
+      <Link to="/admin/courses/new" className="btn btn-primary" style={{ marginTop: 30 }}>
         + Add New Course
       </Link>
       <div style={{ display: "grid", gap: 30, marginTop:30, gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
@@ -32,10 +32,10 @@ export default function AdminCourseList() {
             </p>
             <p>{c.description?.slice(0, 100)}...</p>
             <div style={{ display: "flex", gap: 22, marginTop: 16 }}>
-              <Link to={`/admin/courses/${c.id}`} className="btn btn-small btn-success">
+              <Link to={`/admin/courses/${c.id}`} className="btn btn-edit">
                 Edit
               </Link>
-              <button onClick={() => remove(c.id)} className="btn btn-small btn-danger">
+              <button onClick={() => remove(c.id)} className="btn btn-delete">
                 Delete
               </button>
             </div>

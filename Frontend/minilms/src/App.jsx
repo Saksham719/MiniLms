@@ -14,62 +14,134 @@ export default function App() {
   const { user, logout } = useAuth();
 
   return (
-    <div style={{ maxWidth: 1200, margin: "40px auto", padding: "0 16px" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ fontSize: 24, fontWeight: 700, color: "var(--accent)" }}>MiniLms</span>
-        </div>
-        <nav style={{ display: "flex", gap: 20 }}>
-          <Link to="/" className="btn btn-ghost">Catalog</Link>
-          {user?.role === "Admin" && <Link to="/admin/courses" className="btn btn-ghost">Admin</Link>}
-        </nav>
-        <div>
-          {user ? (
-            <>
-              <span style={{ marginRight: 12 }}>{user.fullName} ({user.role})</span>
-              <button onClick={logout} className="btn btn-ghost">Logout</button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="btn btn-ghost" style={{ marginRight: 12 }}>Login</Link>
-              <Link to="/register" className="btn btn-ghost">Register</Link>
-            </>
-          )}
-        </div>
-      </header>
+   <div style={{ maxWidth: 1400, margin: "0px auto", padding: "0 0px" }}>
+  {/* =======================
+        HEADER / NAVBAR
+  ======================= */}
+  <header
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "0 2rem",
+        height: 60,
+        backgroundColor: "var(--surface)",
+        borderRadius: "var(--radius)",
+        boxShadow: "var(--shadow)",
+        marginBottom: 24,
+      }}
+    >
+      {/* Logo */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <img
+          src="/lms-logo.png"
+          alt="LMS Logo"
+          style={{ height: 40, width: 40, objectFit: "contain" }}
+        />
+        <span style={{ fontSize: 24, fontWeight: 700, color: "var(--accent)" }}>
+          MiniLms
+        </span>
+      </div>
 
-      <Routes>
-        <Route path="/" element={<CourseCatalog />} />
-        <Route path="/courses/:id" element={<CourseDetail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      {/* Navigation Links */}
+      <nav
+        style={{
+          display: "flex",
+          gap: 20,
+          alignItems: "center",
+        }}
+      >
+        {/* Show Catalog link only if user is logged in */}
+        {user && <Link to="/catalog" className="btn btn-ghost">Catalog</Link>}
 
-        {/* Admin Routes */}
-        <Route
-          path="/admin/courses"
-          element={
-            <ProtectedRoute role="Admin">
-              <AdminCourseList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/courses/new"
-          element={
-            <ProtectedRoute role="Admin">
-              <AdminCourseForm />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/courses/:id"
-          element={
-            <ProtectedRoute role="Admin">
-              <AdminCourseForm />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+        {/* Show Admin link only for admin */}
+        {user?.role === "Admin" && (
+          <Link to="/admin/courses" className="btn btn-ghost">Admin</Link>
+        )}
+
+        {/* Show Login/Register if not logged in */}
+        {!user && (
+          <>
+            <Link to="/" className="btn btn-primary">
+              Login
+            </Link>
+            <Link to="/register" className="btn btn-primary">
+              Register
+            </Link>
+          </>
+        )}
+
+        
+      </nav>
+    </header>
+
+ 
+
+  {/* =======================
+        USER INFO SECTION (Logged in)
+  ======================= */}
+  {user && (
+    <div
+      style={{
+        display: "flex",
+        padding: "0 4rem",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "2rem",
+      }}
+    >
+      <span>
+        Welcome, <strong>{user.fullName}</strong> ({user.role})
+      </span>
+      <button to="/" onClick={logout} className="btn btn-logout">
+        Logout
+      </button>
     </div>
+  )}
+
+  {/* =======================
+        ROUTES
+  ======================= */}
+  <Routes>
+    <Route path="/" element={<Login />} />
+  <Route
+    path="/catalog"
+    element={
+      <ProtectedRoute>
+        <CourseCatalog />
+      </ProtectedRoute>
+    }
+  />
+  <Route path="/courses/:id" element={<CourseDetail />} />
+  <Route path="/register" element={<Register />} />
+
+    {/* Admin Routes */}
+    <Route
+      path="/admin/courses"
+      element={
+        <ProtectedRoute role="Admin">
+          <AdminCourseList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/courses/new"
+      element={
+        <ProtectedRoute role="Admin">
+          <AdminCourseForm />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/courses/:id"
+      element={
+        <ProtectedRoute role="Admin">
+          <AdminCourseForm />
+        </ProtectedRoute>
+      }
+    />
+  </Routes>
+</div>
+
   );
 }

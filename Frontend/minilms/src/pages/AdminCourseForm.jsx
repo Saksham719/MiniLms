@@ -84,7 +84,9 @@ export default function AdminCourseForm() {
           <button type="submit" className="btn btn-primary">
             {edit ? "Save" : "Create"}
           </button>
+          
         </div>
+        
       </form>
     </div>
   );

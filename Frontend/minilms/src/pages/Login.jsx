@@ -14,7 +14,7 @@ export default function Login() {
     try {
       await login(email, password);
       toast.success("Welcome");
-      nav("/");
+      nav("/catalog");
     } catch {
       toast.error("Invalid credentials");
     }
@@ -26,7 +26,7 @@ export default function Login() {
       <form onSubmit={submit} style={{ display: "grid", gap: 10 }}>
         <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button>Login</button>
+        <button >Login</button>
       </form>
       <p style={{ marginTop: 10, opacity: 0.8 }}>Admin: admin@demo.com / Admin@123</p>
       <p style={{ opacity: 0.8 }}>Student: student@demo.com / Student@123</p>
