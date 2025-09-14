@@ -1,8 +1,8 @@
 import { Routes, Route, Link } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext";
 import ProtectedRoute from "./auth/ProtectedRoute";
-import Button from "./ui/Button";
 
+// Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CourseCatalog from "./pages/CourseCatalog";
@@ -10,49 +10,138 @@ import CourseDetail from "./pages/CourseDetail";
 import AdminCourseList from "./pages/AdminCourseList";
 import AdminCourseForm from "./pages/AdminCourseForm";
 
-export default function App(){
+export default function App() {
   const { user, logout } = useAuth();
+
   return (
-    <div className="container">
-      <header className="appbar">
-        <div className="brand">
-          <span className="badge-dot" />
-          <h1>MiniLms</h1>
-        </div>
-        <nav style={{display:"flex",gap:10,alignItems:"center"}}>
-          <Link className="btn btn-ghost btn-small" to="/">Catalog</Link>
-          {user?.role==="Admin" && <Link className="btn btn-ghost btn-small" to="/admin/courses">Admin</Link>}
-          <span className="spacer" />
-          {user ? (
-            <>
-              <span style={{opacity:.8, marginRight:8}}>{user.fullName} ({user.role})</span>
-              <Button size="sm" variant="outline" onClick={logout}>Logout</Button>
-            </>
-          ) : (
-            <>
-              <Link className="btn btn-ghost btn-small" to="/login">Login</Link>
-              <Link className="btn btn-primary btn-small" to="/register">Register</Link>
-            </>
-          )}
-        </nav>
-      </header>
+   <div style={{ maxWidth: 1400, margin: "0px auto", padding: "0 0px" }}>
+  {/* =======================
+        HEADER / NAVBAR
+  ======================= */}
+  <header
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "0 2rem",
+        height: 60,
+        backgroundColor: "var(--surface)",
+        borderRadius: "var(--radius)",
+        boxShadow: "var(--shadow)",
+        marginBottom: 24,
+      }}
+    >
+      {/* Logo */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <img
+          src="/lms-logo.png"
+          alt="LMS Logo"
+          style={{ height: 40, width: 40, objectFit: "contain" }}
+        />
+        <span style={{ fontSize: 24, fontWeight: 700, color: "var(--accent)" }}>
+          MiniLms
+        </span>
+      </div>
 
-      <Routes>
-        <Route path="/" element={<CourseCatalog/>} />
-        <Route path="/courses/:id" element={<CourseDetail/>} />
-        <Route path="/login" element={<Login/>} />
-        <Route path="/register" element={<Register/>} />
+      {/* Navigation Links */}
+      <nav
+        style={{
+          display: "flex",
+          gap: 20,
+          alignItems: "center",
+        }}
+      >
+        {/* Show Catalog link only if user is logged in */}
+        {user && <Link to="/catalog" className="btn btn-ghost">Catalog</Link>}
 
-        <Route path="/admin/courses" element={
-          <ProtectedRoute role="Admin"><AdminCourseList/></ProtectedRoute>
-        }/>
-        <Route path="/admin/courses/new" element={
-          <ProtectedRoute role="Admin"><AdminCourseForm/></ProtectedRoute>
-        }/>
-        <Route path="/admin/courses/:id" element={
-          <ProtectedRoute role="Admin"><AdminCourseForm/></ProtectedRoute>
-        }/>
-      </Routes>
+        {/* Show Admin link only for admin */}
+        {user?.role === "Admin" && (
+          <Link to="/admin/courses" className="btn btn-ghost">Admin</Link>
+        )}
+
+        {/* Show Login/Register if not logged in */}
+        {!user && (
+          <>
+            <Link to="/" className="btn btn-primary">
+              Login
+            </Link>
+            <Link to="/register" className="btn btn-primary">
+              Register
+            </Link>
+          </>
+        )}
+
+        
+      </nav>
+    </header>
+
+ 
+
+  {/* =======================
+        USER INFO SECTION (Logged in)
+  ======================= */}
+  {user && (
+    <div
+      style={{
+        display: "flex",
+        padding: "0 4rem",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "2rem",
+      }}
+    >
+      <span>
+        Welcome, <strong>{user.fullName}</strong> ({user.role})
+      </span>
+      <button to="/" onClick={logout} className="btn btn-logout">
+        Logout
+      </button>
     </div>
+  )}
+
+  {/* =======================
+        ROUTES
+  ======================= */}
+  <Routes>
+    <Route path="/" element={<Login />} />
+  <Route
+    path="/catalog"
+    element={
+      <ProtectedRoute>
+        <CourseCatalog />
+      </ProtectedRoute>
+    }
+  />
+  <Route path="/courses/:id" element={<CourseDetail />} />
+  <Route path="/register" element={<Register />} />
+
+    {/* Admin Routes */}
+    <Route
+      path="/admin/courses"
+      element={
+        <ProtectedRoute role="Admin">
+          <AdminCourseList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/courses/new"
+      element={
+        <ProtectedRoute role="Admin">
+          <AdminCourseForm />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/courses/:id"
+      element={
+        <ProtectedRoute role="Admin">
+          <AdminCourseForm />
+        </ProtectedRoute>
+      }
+    />
+  </Routes>
+</div>
+
   );
 }

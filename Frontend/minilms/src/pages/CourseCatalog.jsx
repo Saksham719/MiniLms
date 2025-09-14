@@ -1,58 +1,42 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/client";
-import { Link } from "react-router-dom";
 import { useState } from "react";
-import Card from "../ui/Card";
-import Input from "../ui/Input";
-import Select from "../ui/Select";
-import Button from "../ui/Button";
-import Badge from "../ui/Badge";
-import Empty from "../ui/Empty";
-import Spinner from "../ui/Spinner";
+import { Link } from "react-router-dom";
 
 export default function CourseCatalog() {
-  const [q,setQ]=useState(""); const [category,setCategory]=useState(""); const [level,setLevel]=useState("");
-  const { data, isLoading } = useQuery({
-    queryKey:["courses",q,category,level],
-    queryFn: async ()=>{
-      const r = await api.get("/courses", { params: { search:q || undefined, category:category || undefined, level: level || undefined }});
+  const [q, setQ] = useState("");
+  const [category, setCategory] = useState("");
+  const { data } = useQuery({
+    queryKey: ["courses", q, category],
+    queryFn: async () => {
+      const r = await api.get("/courses", { params: { search: q || undefined, category: category || undefined } });
       return r.data;
-    }
+    },
   });
 
   return (
-    <Card>
-      <div className="toolbar">
-        <Input placeholder="Search courses…" value={q} onChange={e=>setQ(e.target.value)} />
-        <Input placeholder="Category" value={category} onChange={e=>setCategory(e.target.value)} />
-        <Select value={level} onChange={e=>setLevel(e.target.value)}>
-          <option value="">Level</option>
-          <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
-        </Select>
-        <span className="spacer" />
-        <Button variant="outline" onClick={()=>{setQ("");setCategory("");setLevel("")}}>Clear</Button>
+    <div style={{ maxWidth: 900, margin: "20px auto" }}>
+      <h2>Courses</h2>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        <input placeholder="Search..." value={q} onChange={(e) => setQ(e.target.value)} />
+        <input placeholder="Category..." value={category} onChange={(e) => setCategory(e.target.value)} />
       </div>
-
-      {isLoading ? <div className="empty"><Spinner/> Loading...</div> :
-        data?.items?.length ? (
-          <div className="grid">
-            {data.items.map(c=>(
-              <div key={c.id} className="card" style={{padding:14}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <h3 style={{margin:"6px 0"}}>{c.title}</h3>
-                  {c.isPublished ? <Badge tone="ok">Published</Badge> : <Badge tone="warn">Draft</Badge>}
-                </div>
-                <div style={{opacity:.8, marginBottom:10}}>
-                  {c.category || "General"} · {c.level || "Level N/A"} · {c.durationMinutes || 0} mins
-                </div>
-                <div style={{display:"flex",justifyContent:"flex-end"}}>
-                  <Link className="btn btn-primary btn-small" to={`/courses/${c.id}`}>View</Link>
-                </div>
+      <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" }}>
+        {data?.items?.map((c) => (
+          <div key={c.id} className="card" style={{ position: "relative" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+              <div>
+                <h3>{c.title}</h3>
+                <p style={{ color: "var(--text-secondary)" }}>{c.category} · {c.level}</p>
               </div>
-            ))}
+              <Link to={`/courses/${c.id}`} className="btn btn-view">View</Link>
+            </div>
+            <p>{c.description?.slice(0, 100)}...</p>
           </div>
-        ) : <Empty>No courses match your filters.</Empty>
-      }
-    </Card>
+        ))}
+        {!data?.items?.length && <div className="empty">No courses available</div>}
+      </div>
+    </div>
+    
   );
 }

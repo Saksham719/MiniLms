@@ -1,30 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/client";
-import { useParams } from "react-router-dom";
-import Card from "../ui/Card";
-import Badge from "../ui/Badge";
-import Empty from "../ui/Empty";
+import { Link, useParams } from "react-router-dom";
 
 export default function CourseDetail() {
   const { id } = useParams();
-  const { data, isLoading } = useQuery({
-    queryKey:["course",id],
-    queryFn: async ()=> (await api.get(`/courses/${id}`)).data
+  const { data } = useQuery({
+    queryKey: ["course", id],
+    queryFn: async () => (await api.get(`/courses/${id}`)).data,
   });
-
-  if (isLoading) return <Card><div className="empty">Loading…</div></Card>;
-  if (!data) return <Empty>Course not found.</Empty>;
-
+  if (!data) return <div style={{ padding: 20 }}>Loading…</div>;
   return (
-    <div className="card">
-      <h2 style={{marginTop:0}}>{data.title}</h2>
-      <div style={{display:"flex",gap:10,alignItems:"center",opacity:.9, marginBottom:10}}>
-        <Badge tone="info">{data.category || "General"}</Badge>
-        <Badge tone="warn">{data.level || "Level N/A"}</Badge>
-        <Badge tone="ok">{data.durationMinutes || 0} mins</Badge>
-        {data.isPublished ? <Badge tone="ok">Published</Badge> : <Badge tone="warn">Draft</Badge>}
+     <div style={{ maxWidth: 800, margin: "40px auto" }}>
+      <h2>{data.title}</h2>
+      <div style={{ opacity: 0.8, marginBottom: 20 }}>
+        {data.category} · {data.level} · {data.durationMinutes} mins
       </div>
-      <p style={{lineHeight:1.6}}>{data.description || "No description provided."}</p>
+      <p style={{marginBottom: 20}}>{data.description || "No description"}</p>
+
+      {/* Back Button */}
+      <Link
+        to={"/catalog"}
+        onClick={() => navigate(-1)} // Go back to previous page
+        className="btn btn-back"
+        style={{ marginTop: 30 }}
+      >
+        ← Back
+      </Link>
     </div>
   );
 }
