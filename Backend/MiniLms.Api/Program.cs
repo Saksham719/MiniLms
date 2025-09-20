@@ -7,49 +7,66 @@ using MiniLms.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB
-builder.Services.AddDbContext<AppDb>(o =>
-  o.UseSqlite(builder.Configuration.GetConnectionString("Default"))
-);
+// =========================
+// 1. Configure Services
+// =========================
 
-// JSON enum names
-builder.Services.ConfigureHttpJsonOptions(opts => {
-  opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+// Database (SQLite via EF Core)
+builder.Services.AddDbContext<AppDb>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+
+// JSON serialization (Enums as strings)
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-// CORS for Vite dev server
-builder.Services.AddCors(opt => opt.AddDefaultPolicy(p =>
-  p.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()
-));
+// CORS (allow Vite dev server during development)
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
 
-// AuthN (JWT)
+// JWT Authentication
 var jwt = builder.Configuration.GetSection("Jwt");
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-  .AddJwtBearer(o => {
-    o.TokenValidationParameters = new TokenValidationParameters {
-      ValidateIssuer = true,
-      ValidateAudience = true,
-      ValidateIssuerSigningKey = true,
-      ValidateLifetime = true,
-      ValidIssuer = jwt["Issuer"],
-      ValidAudience = jwt["Audience"],
-      IssuerSigningKey = key
-    };
-  });
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ValidIssuer = jwt["Issuer"],
+            ValidAudience = jwt["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
 
+        };
+    });
+
+// Authorization
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Seed at startup
-using (var scope = app.Services.CreateScope()) {
-  var db = scope.ServiceProvider.GetRequiredService<AppDb>();
-  Seed.Ensure(db);
+// =========================
+// Seed database at startup
+// =========================
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDb>();
+    Seed.Ensure(db);
 }
 
+// =========================
+// Middleware
+// =========================
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
