@@ -1,3 +1,4 @@
+// MiniLms.Api/Program.cs
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -5,20 +6,6 @@ using MiniLms.Api.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// 1) CORS
-const string ViteDevCors = "ViteDevCors";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(ViteDevCors, policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:5173") // your Vite dev server
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-            // If you ever send cookies: add .AllowCredentials() and DO NOT use AllowAnyOrigin()
-    });
-});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -31,7 +18,7 @@ var jwt = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
-        opts.TokenValidationParameters = new()
+        opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
@@ -43,8 +30,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Authorization
 builder.Services.AddAuthorization();
+
+const string ViteDevCors = "ViteDevCors";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(ViteDevCors, policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173") // EXACT match to your Vite origin
+            .AllowAnyHeader()                     // allows Content-Type: application/json, Authorization, etc.
+            .AllowAnyMethod();                    // GET/POST/PUT/DELETE/OPTIONS
+        // DO NOT call .AllowCredentials() unless you’re using cookies;
+        // if you do, you cannot use AllowAnyOrigin()
+    });
+});
+
 
 var app = builder.Build();
 
@@ -52,20 +54,18 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-
-// 2) Enable CORS BEFORE auth/authorization
-app.UseCors(ViteDevCors);
+app.UseCors(ViteDevCors);        // <--- put CORS BEFORE auth/authorization
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Optional: migrations + seed
+// optional: basic DB seed on first run
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    db.Database.EnsureCreated();
     DbSeeder.Seed(db);
 }
 

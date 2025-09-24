@@ -11,14 +11,14 @@ using MiniLms.Api.Data;
 namespace MiniLms.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250924091734_Week3_Update")]
-    partial class Week3_Update
+    [Migration("20250924165218_AddEnrollmentTimestamps")]
+    partial class AddEnrollmentTimestamps
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
             modelBuilder.Entity("MiniLms.Api.Models.Course", b =>
                 {

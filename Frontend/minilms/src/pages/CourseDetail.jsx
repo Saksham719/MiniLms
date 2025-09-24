@@ -38,7 +38,7 @@ export default function CourseDetail() {
         <button onClick={onEnroll} className="btn btn-primary">Enroll</button>
       )}
 
-      <Link to="/catalog" className="btn btn-back" style={{ marginLeft: 12, color: "white" }}>
+      <Link to="/catalog" className="btn btn-back" style={{ marginLeft: 12 }}>
         ← Back
       </Link>
     </div>

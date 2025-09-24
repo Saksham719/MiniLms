@@ -15,7 +15,7 @@ namespace MiniLms.Api.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
             modelBuilder.Entity("MiniLms.Api.Models.Course", b =>
                 {
@@ -62,14 +62,10 @@ namespace MiniLms.Api.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
-<<<<<<< HEAD:Backend/MiniLms.Api/Migrations/AppDbModelSnapshot.cs
-                    b.Property<DateTime>("LastAccessed")
-=======
                     b.Property<DateTime>("EnrolledAt")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("LastAccessedAt")
->>>>>>> b430aef8b973c04590d201a4f9c98e3e9b3d820a:Backend/MiniLms.Api/Migrations/AppDbContextModelSnapshot.cs
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Progress")
@@ -80,15 +76,9 @@ namespace MiniLms.Api.Migrations
 
                     b.HasKey("Id");
 
-<<<<<<< HEAD:Backend/MiniLms.Api/Migrations/AppDbModelSnapshot.cs
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("CourseId", "UserId")
-=======
                     b.HasIndex("CourseId");
 
                     b.HasIndex("UserId", "CourseId")
->>>>>>> b430aef8b973c04590d201a4f9c98e3e9b3d820a:Backend/MiniLms.Api/Migrations/AppDbContextModelSnapshot.cs
                         .IsUnique();
 
                     b.ToTable("Enrollments");
@@ -117,6 +107,9 @@ namespace MiniLms.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

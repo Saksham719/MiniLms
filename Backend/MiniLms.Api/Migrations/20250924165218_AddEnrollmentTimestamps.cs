@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MiniLms.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class Week3_Update : Migration
+    public partial class AddEnrollmentTimestamps : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

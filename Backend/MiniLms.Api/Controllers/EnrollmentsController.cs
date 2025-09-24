@@ -125,31 +125,5 @@ namespace MiniLms.Api.Controllers
             await _db.SaveChangesAsync();
             return Ok(new { enrollment.Id, enrollment.Progress, enrollment.LastAccessedAt });
         }
-        // PUT: api/enrollments/{id}/admin
-// Admin can update progress (and later you can extend fields if needed)
-[HttpPut("{id:int}/admin")]
-[Authorize(Roles = "Admin")]
-public async Task<IActionResult> AdminUpdateEnrollment(int id, [FromBody] int progress)
-{
-    var e = await _db.Enrollments.FindAsync(id);
-    if (e == null) return NotFound();
-    e.Progress = Math.Clamp(progress, 0, 100);
-    e.LastAccessedAt = DateTime.UtcNow;
-    await _db.SaveChangesAsync();
-    return Ok(new { e.Id, e.Progress, e.LastAccessedAt });
-}
-
-// DELETE: api/enrollments/{id}
-[HttpDelete("{id:int}")]
-[Authorize(Roles = "Admin")]
-public async Task<IActionResult> AdminDeleteEnrollment(int id)
-{
-    var e = await _db.Enrollments.FindAsync(id);
-    if (e == null) return NotFound();
-    _db.Enrollments.Remove(e);
-    await _db.SaveChangesAsync();
-    return NoContent();
-}
-
     }
 }
