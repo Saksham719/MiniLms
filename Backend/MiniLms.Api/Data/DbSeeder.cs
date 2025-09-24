@@ -34,6 +34,7 @@ namespace MiniLms.Api.Data
                 context.Courses.AddRange(
                     new Course
                     {
+                        
                         Title = "Intro to Programming",
                         Description = "Learn basics of programming with C#",
                         Category = "Programming",

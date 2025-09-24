@@ -78,10 +78,10 @@ export default function AdminCourseForm() {
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-          <button type="button" onClick={() => nav("/admin/courses")} className="btn btn-small btn-ghost">
+          <button type="button" onClick={() => nav("/admin/courses")} className="">
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="">
             {edit ? "Save" : "Create"}
           </button>
           
