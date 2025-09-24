@@ -1,119 +1,146 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/client";
-import { useAuth } from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+
+const PAGE_SIZE = 8;
 
 export default function AdminCourseList() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [category, setCategory] = useState("");
+  const [level, setLevel] = useState("");
 
-  const [selectedCourseId, setSelectedCourseId] = useState(null);
-  const [showEnrollments, setShowEnrollments] = useState(false);
+  // debounce search
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
-  // Fetch courses
-  const { data: courses, isLoading } = useQuery({
-    queryKey: ["admin-courses"],
-    queryFn: async () => (await api.get("/courses")).data.items,
-  });
+  const key = useMemo(
+    () => ["admin-courses", { page, search: debouncedSearch, category, level }],
+    [page, debouncedSearch, category, level]
+  );
 
-  // Fetch enrollments for a selected course
-  const { data: enrollments, refetch } = useQuery({
-    queryKey: ["enrollments", selectedCourseId],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: key,
     queryFn: async () => {
-      if (!selectedCourseId) return [];
-      const r = await api.get(`/enrollments/course/${selectedCourseId}`);
-      return r.data;
+      const res = await api.get("/courses", {
+        params: {
+          search: debouncedSearch || undefined,
+          category: category || undefined,
+          level: level || undefined,
+          page,
+          pageSize: PAGE_SIZE,
+        },
+      });
+      return res.data; // { total, items, page, pageSize }
     },
-    enabled: false, // manual fetch
+    keepPreviousData: true,
   });
 
-  const handleViewEnrollments = (courseId) => {
-    setSelectedCourseId(courseId);
-    setShowEnrollments(true);
-    refetch(); // fetch enrollments for this course
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const remove = async (id) => {
+    if (!confirm("Delete this course?")) return;
+    await api.delete(`/courses/${id}`);
+    toast.success("Course deleted");
+    if ((data?.items?.length ?? 0) === 1 && page > 1) setPage((p) => p - 1);
+    qc.invalidateQueries({ queryKey: ["admin-courses"] });
   };
 
-  if (isLoading) return <div>Loading courses…</div>;
+  const reset = () => { setSearch(""); setCategory(""); setLevel(""); setPage(1); };
 
   return (
-    <div style={{ maxWidth: 900, margin: "20px auto" }}>
-      {/* Header with Add New Course */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <h2>Admin: Courses</h2>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/admin/courses/new")}
-        >
-          Add New Course +
-        </button>
-      </div>
-
-      {/* Course list */}
-      <div style={{ display: "grid", gap: 10 }}>
-        {courses.map((c) => (
-          <div key={c.id} className="card">
-            <h3>{c.title}</h3>
-            <p style={{ color: "var(--text-dim)" }}>{c.category} · {c.level}</p>
-
-            {/* View Enrollments button per course */}
-            {user?.role === "Admin" && (
-              <button
-                className="btn btn-primary"
-                onClick={() => handleViewEnrollments(c.id)}
-                style={{ marginTop: 8 }}
-              >
-                View Enrollments
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Enrollments Modal */}
-      {showEnrollments && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
-          onClick={() => setShowEnrollments(false)}
-        >
-          <div
-            className="card"
-            style={{ width: 500, maxHeight: "70%", overflowY: "auto" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3>Enrolled Students</h3>
-            {enrollments?.length > 0 ? (
-              <ul>
-                {enrollments.map((e) => (
-                  <li key={e.id}>
-                    {e.userName} — Progress: {e.progress}% — Last Accessed:{" "}
-                    {new Date(e.lastAccessed).toLocaleString()}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div>No students enrolled yet.</div>
-            )}
-            <button
-              className="btn btn-ghost"
-              onClick={() => setShowEnrollments(false)}
-              style={{ marginTop: 12 }}
-            >
-              Close
-            </button>
-          </div>
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <h2 className="page-title">Courses</h2>
+          <p className="page-sub">Manage your catalog, enrollments, and visibility</p>
         </div>
+        <Link to="/admin/courses/new" className="btn btn-primary icon-gap">
+          <span>＋</span> <span>Add New Course</span>
+        </Link>
+      </div>
+
+      <div className="toolbar">
+        <input
+          className="input"
+          placeholder="Search title…"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        />
+        <select
+          className="select-light"
+          value={category}
+          onChange={(e) => { setCategory(e.target.value); setPage(1); }}
+        >
+          <option value="">All categories</option>
+          <option>Programming</option>
+          <option>Web Development</option>
+        </select>
+        <select
+          className="select-light"
+          value={level}
+          onChange={(e) => { setLevel(e.target.value); setPage(1); }}
+        >
+          <option value="">All levels</option>
+          <option>Beginner</option>
+          <option>Intermediate</option>
+          <option>Advanced</option>
+        </select>
+        <button className="btn-reset" onClick={reset}>Reset</button>
+      </div>
+
+      {isLoading && (
+        <div className="grid">{Array.from({ length: PAGE_SIZE }).map((_, i) => <div key={i} className="skeleton" />)}</div>
+      )}
+
+      {isError && <div className="empty">Couldn’t load courses. Try again.</div>}
+
+      {!isLoading && !isError && (
+        <>
+          <div className="grid">
+            {(data?.items ?? []).map((c) => (
+              <div key={c.id} className="card">
+                <div className="card-head">
+                  <h3 className="card-title" title={c.title}>{c.title}</h3>
+                  <span className={`badge ${c.isPublished ? "ok" : ""}`}>
+                    {c.isPublished ? "Published" : "Draft"}
+                  </span>
+                </div>
+
+                <div className="card-meta">{c.category || "—"} • {c.level || "—"}</div>
+                <div className="card-desc">
+                  {(c.description || "No description").slice(0, 140)}
+                  {c.description && c.description.length > 140 ? "…" : ""}
+                </div>
+
+                <div className="card-meta">
+                  {c.durationMinutes ?? 0} mins • Created {new Date(c.createdAt).toLocaleDateString()}
+                </div>
+
+                <div className="card-actions">
+                  <Link to={`/admin/courses/${c.id}`} className="btn btn-ghost">Edit</Link>
+                  <Link to={`/admin/courses/${c.id}/enrollments`} className="btn btn-primary">View Enrollments</Link>
+                  <button onClick={() => remove(c.id)} className="btn btn-danger">Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {(data?.items?.length ?? 0) === 0 && <div className="empty">No courses found. Adjust filters.</div>}
+
+          <div className="pager">
+            <button className="btn btn-ghost btn-sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>← Prev</button>
+            <span>Page {page} of {totalPages} • {total} total</span>
+            <button className="btn btn-ghost btn-sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next →</button>
+          </div>
+        </>
       )}
     </div>
   );

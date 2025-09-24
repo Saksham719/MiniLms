@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniLms.Api.Data;
 
@@ -9,10 +10,12 @@ using MiniLms.Api.Data;
 
 namespace MiniLms.Api.Migrations
 {
-    [DbContext(typeof(AppDb))]
-    partial class AppDbModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20250924091734_Week3_Update")]
+    partial class Week3_Update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -62,7 +65,10 @@ namespace MiniLms.Api.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("LastAccessed")
+                    b.Property<DateTime>("EnrolledAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastAccessedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Progress")
@@ -73,9 +79,9 @@ namespace MiniLms.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CourseId");
 
-                    b.HasIndex("CourseId", "UserId")
+                    b.HasIndex("UserId", "CourseId")
                         .IsUnique();
 
                     b.ToTable("Enrollments");
@@ -104,6 +110,9 @@ namespace MiniLms.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

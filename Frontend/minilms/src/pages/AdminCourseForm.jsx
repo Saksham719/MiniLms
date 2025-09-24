@@ -94,14 +94,22 @@ export default function AdminCourseForm() {
           />{" "}
           Published
         </label>
-
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={loading}
-        >
-          {loading ? "Saving..." : id ? "Update Course" : "Create Course"}
-        </button>
+        <textarea
+          rows={4}
+          placeholder="Course Description"
+          value={form.description || ""}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <button type="button" onClick={() => nav("/admin/courses")} className="">
+            Cancel
+          </button>
+          <button type="submit" className="">
+            {edit ? "Save" : "Create"}
+          </button>
+          
+        </div>
+        
       </form>
     </div>
   );

@@ -45,11 +45,9 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+     <p style={{ marginTop: 10, opacity: 0.8 }}>Admin: admin@mini.com / Admin@123</p>
+<p style={{ opacity: 0.8 }}>Student: student@mini.com / Student@123</p>
 
-      <div style={{ marginTop: 20, opacity: 0.8 }}>
-        <p>Admin: admin@demo.com / Admin@123</p>
-        <p>Student: student@demo.com / Student@123</p>
-      </div>
     </div>
   );
 }

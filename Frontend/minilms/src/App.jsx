@@ -9,6 +9,7 @@ import CourseCatalog from "./pages/CourseCatalog";
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourseList from "./pages/AdminCourseList";
 import AdminCourseForm from "./pages/AdminCourseForm";
+import AdminCourseEnrollments from "./pages/AdminCourseEnrollments";  
 
 export default function App() {
   const { user, logout } = useAuth();
@@ -25,7 +26,7 @@ export default function App() {
         alignItems: "center",
         padding: "0 2rem",
         height: 60,
-        backgroundColor: "var(--surface)",
+        backgroundColor: "var(--header-bg)",
         borderRadius: "var(--radius)",
         boxShadow: "var(--shadow)",
         marginBottom: 24,
@@ -52,11 +53,11 @@ export default function App() {
         }}
       >
         {/* Show Catalog link only if user is logged in */}
-        {user && <Link to="/catalog" className="btn btn-ghost">Catalog</Link>}
+        {user && <Link to="/catalog" className="">Catalog</Link>}
 
         {/* Show Admin link only for admin */}
         {user?.role === "Admin" && (
-          <Link to="/admin/courses" className="btn btn-ghost">Admin</Link>
+          <Link to="/admin/courses" className="">Admin</Link>
         )}
 
         {/* Show Login/Register if not logged in */}
@@ -112,6 +113,7 @@ export default function App() {
       </ProtectedRoute>
     }
   />
+  <Route path="/admin/courses/:id/enrollments" element={<AdminCourseEnrollments />} />
   <Route path="/courses/:id" element={<CourseDetail />} />
   <Route path="/register" element={<Register />} />
 

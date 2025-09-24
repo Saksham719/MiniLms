@@ -1,3 +1,4 @@
+// MiniLms.Api/Controllers/AuthController.cs
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -13,10 +14,9 @@ namespace MiniLms.Api.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly AppDb _db;
+    private readonly AppDbContext _db;
     private readonly IConfiguration _cfg;
-
-    public AuthController(AppDb db, IConfiguration cfg) { _db = db; _cfg = cfg; }
+    public AuthController(AppDbContext db, IConfiguration cfg) { _db = db; _cfg = cfg; }
 
     public record RegisterDto(string FullName, string Email, string Password, string? Role);
     public record LoginDto(string Email, string Password);
@@ -24,20 +24,16 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
-        if (await _db.Users.AnyAsync(u => u.Email == dto.Email))
-            return Conflict("Email already registered");
-
+        if (await _db.Users.AnyAsync(u => u.Email == dto.Email)) return Conflict("Email already registered");
         var user = new User
         {
             FullName = dto.FullName,
             Email = dto.Email,
-            Role = string.IsNullOrWhiteSpace(dto.Role) ? "Student" : dto.Role,
+            Role = string.IsNullOrWhiteSpace(dto.Role) ? "Student" : dto.Role!,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
         };
-
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
-
         return Ok(new { user.Id, user.FullName, user.Email, user.Role });
     }
 
@@ -51,12 +47,12 @@ public class AuthController : ControllerBase
         var jwt = _cfg.GetSection("Jwt");
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // <-- add this
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(ClaimTypes.Name, user.FullName),
-            new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role)
         };
-
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
@@ -66,7 +62,7 @@ public class AuthController : ControllerBase
             expires: DateTime.UtcNow.AddMinutes(int.Parse(jwt["ExpiresMinutes"]!)),
             signingCredentials: creds
         );
-
-        return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), user = new { user.Id, user.FullName, user.Email, user.Role } });
+        var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
+        return Ok(new { token = tokenStr, user = new { user.Id, user.FullName, user.Email, user.Role } });
     }
 }

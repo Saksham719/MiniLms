@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniLms.Api.Data;
 
@@ -10,12 +9,10 @@ using MiniLms.Api.Data;
 
 namespace MiniLms.Api.Migrations
 {
-    [DbContext(typeof(AppDb))]
-    [Migration("20250903082358_init")]
-    partial class init
+    [DbContext(typeof(AppDbContext))]
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -56,6 +53,47 @@ namespace MiniLms.Api.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("MiniLms.Api.Models.Enrollment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+<<<<<<< HEAD:Backend/MiniLms.Api/Migrations/AppDbModelSnapshot.cs
+                    b.Property<DateTime>("LastAccessed")
+=======
+                    b.Property<DateTime>("EnrolledAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastAccessedAt")
+>>>>>>> b430aef8b973c04590d201a4f9c98e3e9b3d820a:Backend/MiniLms.Api/Migrations/AppDbContextModelSnapshot.cs
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Progress")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+<<<<<<< HEAD:Backend/MiniLms.Api/Migrations/AppDbModelSnapshot.cs
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("CourseId", "UserId")
+=======
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId", "CourseId")
+>>>>>>> b430aef8b973c04590d201a4f9c98e3e9b3d820a:Backend/MiniLms.Api/Migrations/AppDbContextModelSnapshot.cs
+                        .IsUnique();
+
+                    b.ToTable("Enrollments");
+                });
+
             modelBuilder.Entity("MiniLms.Api.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -80,10 +118,26 @@ namespace MiniLms.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MiniLms.Api.Models.Enrollment", b =>
+                {
+                    b.HasOne("MiniLms.Api.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiniLms.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
