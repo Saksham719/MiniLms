@@ -11,6 +11,8 @@ namespace MiniLms.Api.Data
         public DbSet<User> Users => Set<User>();
         public DbSet<Course> Courses => Set<Course>();
         public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+        public DbSet<CourseMaterial> CourseMaterials => Set<CourseMaterial>();
+
 
         public override int SaveChanges()
         {
@@ -30,6 +32,11 @@ namespace MiniLms.Api.Data
             modelBuilder.Entity<Enrollment>()
                 .HasIndex(e => new { e.UserId, e.CourseId })
                 .IsUnique(); // prevent duplicate enrollments
+             modelBuilder.Entity<CourseMaterial>()
+                .HasOne(m => m.Course)
+                .WithMany() // or create Course.Materials nav if you like
+                .HasForeignKey(m => m.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

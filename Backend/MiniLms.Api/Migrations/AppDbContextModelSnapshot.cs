@@ -53,6 +53,37 @@ namespace MiniLms.Api.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("MiniLms.Api.Models.CourseMaterial", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("CourseMaterials");
+                });
+
             modelBuilder.Entity("MiniLms.Api.Models.Enrollment", b =>
                 {
                     b.Property<int>("Id")
@@ -112,6 +143,17 @@ namespace MiniLms.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MiniLms.Api.Models.CourseMaterial", b =>
+                {
+                    b.HasOne("MiniLms.Api.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("MiniLms.Api.Models.Enrollment", b =>

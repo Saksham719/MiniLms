@@ -1,97 +1,171 @@
-## 🛠️ Tech Stack
-- Backend → ASP.NET Core 8, Entity Framework Core, SQLite, JWT Auth
-- Frontend → Vite, React, React Router, React Query, Axios
+# 📘 MiniLms — Weeks 2–4 Project
 
-## 🚀 Setup & Run
-- Backend (API)
-- cd backend/MiniLms.Api
-- dotnet restore
-- dotnet ef database update
-- dotnet run
+A minimal Learning Management System (LMS) built with ASP.NET Core 8 (Backend) and React + Vite (Frontend).
+It demonstrates authentication, role-based access, course catalog, enrollments, materials, and admin management.
 
+# 🛠 Tech Stack
 
-## API base URL (dev): http://localhost:5237
+Backend: ASP.NET Core 8, Entity Framework Core, SQLite, JWT Auth, CORS
+Frontend: Vite, React, React Router, React Query, Axios
 
-- If you changed ports, update the frontend API_BASE accordingly.
-
-- Frontend (Web)
-- cd frontend/minilms
-- npm install
-- npm run dev
+# 🚀 Setup & Run
+    Backend (API)
+    cd backend/MiniLms.Api
+    dotnet restore
+    dotnet ef database update   # applies latest migrations
+    dotnet run
 
 
-## UI base URL (dev): http://localhost:5173
+# API base URL (dev): http://localhost:5137 (update if your port differs)
 
-## 👥 Default Accounts
 
-- These come from the seed data.
-- Admin → admin@mini.com / Admin@123
-- Student → student@mini.com / Student@123
 
-## (If you changed the emails in the seeder, use those instead.)
+Frontend (Web)
+cd frontend/minilms
+npm install
+npm run dev
 
-## 🔐 Login / Register
 
-- Navigate to / → Login page.
-- Use the default credentials above or register a new user.
-- New users default to the Student role.
-## Post-login landing:
-- Admin → redirected to /admin/courses
-- Student → redirected to /catalog
+# UI base URL (dev): http://localhost:5173
 
-## 📚 Student Flow (Enroll + Dashboard)
+If your API port changed, set API_BASE in your axios client accordingly (e.g., http://localhost:5237/api).
 
-- Browse Catalog
-- Go to /catalog. Use search/filters (category, level) as needed.
-## Open a Course
--Click a course card → /courses/:id detail page.
-## Enroll
-- Click Enroll (visible for Student role).
-- You’ll see a success toast if enrollment is created (duplicates are prevented).
-# Student Dashboard (progress)
-- Go to /dashboard (or your Student dashboard route).
-- See your enrolled courses with Progress and Enrolled date.
-- Update progress by typing a value (0–100) and blurring the input (or using the Save action if present).
+# 👥 Default Accounts (seed)
 
-# 🛠️ Admin Flow (Courses + View/Edit/Delete Enrollments)
-- Admin Courses
-- Go to /admin/courses.
-- Filter with Search / Category / Level
-- Add, Edit, or Delete courses
-- Cards show title, meta, description snippet, duration, and publish badge.
-- Per-course Enrollments
-- On any course card click View Enrollments → /admin/courses/:id/enrollments
-- Table shows Student, Email, Progress, Enrolled, Last Accessed
-- Edit progress: change the number (0–100) then Save
-- Delete: remove an enrollment (prompt confirms)
-- Pagination is available at the bottom
+Admin → admin@mini.com / Admin@123
+Student → student@mini.com / Student@123
 
-# Admin also has a global enrollments view (optional) if you added it; the per-course page is required for Week-3.
+# 🔐 Login / Landing
 
-# 📦 API Endpoints (used this week)
+Navigate to / → Login page.
+New registrations default to Student role.
+Post-login:
+Admin → /admin/courses
+Student → /catalog
 
-- Auth
-- POST /api/auth/login
-- POST /api/auth/register
+# 📖 Week 2 — Core Features
+
+Role-based authentication (JWT)
+Student Catalog (browse course list & details)
+Admin course management (create, edit, delete, list)
+Basic documentation and setup guide
+
+# 📚 Week 3 — Enrollments
+What’s implemented
+
+# Student
+Enroll in a course (duplicate-safe)
+Student Dashboard: paginated enrollments with progress (0–100%) and last accessed timestamp
+
+# Admin
+Admin Courses page with search / category / level filters and pagination
+Per-course View Enrollments with Edit progress and Delete actions
+
+# API & Infra
+
+Endpoints secured via JWT + CORS configured
+EF Core migrations enabled
+README updated with flows and endpoints
+
+# Student flow
+
+Login → Catalog → open a course → Enroll → Dashboard shows enrollments (update progress).
+
+# Admin flow
+
+Login → lands on /admin/courses → filter/search → View Enrollments for a course → edit or delete enrollments.
+
+# 📦 Week 4 — Course Materials
+
+Enable admins to attach materials (URL or uploaded file) to a course; students can view/download them on the course page.
+
+# What’s included
+
+# Backend
+
+# Model:
+CourseMaterial { Id, CourseId, Title, Type(url|file), Location, UploadedAt }
+
+# Endpoints:
+
+GET /api/courses/{id}/materials
+POST /api/courses/{id}/materials/url (Admin)
+POST /api/courses/{id}/materials/file (Admin, multipart)
+DELETE /api/materials/{id} (Admin)
+Static files are served from wwwroot/uploads/... (via app.UseStaticFiles())
+
+3 Frontend
+
+Admin → Course → Materials: add URL, upload file, list & delete materials
+Student → Course Detail: Materials list with links:
+URL → opens in new tab
+File → downloads/opens from /uploads/...
+Loaders, empty states, and toasts for good UX
+
+# Migration (if not already applied)
+cd backend/MiniLms.Api
+dotnet ef migrations add Week4_Materials
+dotnet ef database update
+
+# Quick test
+
+Login as Admin → /admin/courses → open a course → Materials
+Add URL (title + https://…) → appears in list
+Upload File (title + file) → appears with “Download”
+Login as Student → open the same course → Materials visible
+URL opens, file downloads
+Delete a material as Admin → confirm it disappears from both pages
+
+# 🔗 API Summary
+# Auth
+
+POST /api/auth/login
+POST /api/auth/register
+
 # Courses
 
-- GET /api/courses?search=&category=&level=&page=&pageSize=
-- GET /api/courses/{id}
+GET /api/courses?search=&category=&level=&page=&pageSize=
+GET /api/courses/{id}
+(Admin) POST /api/courses
+(Admin) PUT /api/courses/{id}
+(Admin) DELETE /api/courses/{id}
 
-# (Admin) POST /api/courses, PUT /api/courses/{id}, DELETE /api/courses/{id}
+# Enrollments
 
-- Enrollments
-- (Student) POST /api/enrollments/enroll/{courseId}
-- (Student) GET /api/enrollments/student/{userId}?page=&pageSize=
-- (Student) PUT /api/enrollments/{id}/progress (updates own enrollment)
-- (Admin) GET /api/enrollments/admin?courseId=&userId=&search=&page=&pageSize=
-- (Admin) PUT /api/enrollments/{id}/admin (edit progress)
-- (Admin) DELETE /api/enrollments/{id} (delete enrollment)
+(Student) POST /api/enrollments/enroll/{courseId}
+(Student) GET /api/enrollments/student/{userId}?page=&pageSize=
+(Student) PUT /api/enrollments/{id}/progress
+(Admin) GET /api/enrollments/admin?courseId=&userId=&search=&page=&pageSize=
+(Admin) PUT /api/enrollments/{id}/admin
+(Admin) DELETE /api/enrollments/{id}
 
-# 🧭 Week-3 Checklist
+# Materials (Week 4)
 
-- Student can Enroll in a course (no duplicates)
--  Student Dashboard with pagination & progress update
--  Admin Courses page with filters, pagination, and actions
--  Admin View Enrollments per course with Edit/Delete
--  JWT roles enforced on endpoints
+GET /api/courses/{id}/materials
+(Admin) POST /api/courses/{id}/materials/url
+(Admin) POST /api/courses/{id}/materials/file (multipart)
+(Admin) DELETE /api/materials/{id}
+
+# 🧭 UX Notes
+
+Routing after login: Admin → /admin/courses, Student → /catalog
+Logout: clears auth and redirects to /login
+Buttons/Inputs: styled for contrast (dark theme); native selects readable (light popup)
+Role-aware nav: hide admin links for students and vice versa
+
+# 🧰 Troubleshooting
+
+CORS: Browser blocks preflight
+Ensure WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod() and app.UseCors("ViteDevCors") before auth.
+DB already has old schema
+Create a new migration for added columns/tables or delete minilms.db (dev only) and run dotnet ef database update.
+Uploads 404
+Ensure app.UseStaticFiles() and files exist under wwwroot/uploads/....
+Ports mismatch
+Frontend axios base must point to your API’s active port.
+
+# ✅ Status
+
+Week 2: Role-based auth, Catalog, Admin course CRUD — Done
+Week 3: Enrollments (student + admin), filters, pagination, docs — Done
+Week 4: Materials (URL/file), UI polish, docs — Done
