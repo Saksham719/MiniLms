@@ -227,6 +227,7 @@ button:disabled, .btn:disabled {
    INPUTS & FORMS
 ========================= */
 input, select, textarea {
+  align-items: center;
   width: 100%;
   padding: 12px;
   margin: 6px 0;
@@ -241,7 +242,7 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
   outline: none;
-  background-color: #f3f4f6;
+  background-color: var(--panel);
 }
 
 input::placeholder, textarea::placeholder {
@@ -351,7 +352,7 @@ li {
 body{ background: var(--bg); color: var(--text); }
 
 /* Page & header */
-.page { max-width: 1200px; margin: 48px auto; padding: 0 20px; }
+.page { max-width: 1200px; margin: 48px auto; padding: 0 14rem;}
 .page-header {
   display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 18px;
 }
