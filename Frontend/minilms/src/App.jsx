@@ -9,6 +9,7 @@ import CourseCatalog from "./pages/CourseCatalog";
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourseList from "./pages/AdminCourseList";
 import AdminCourseForm from "./pages/AdminCourseForm";
+import AdminCourseEnrollments from "./pages/AdminCourseEnrollments";  
 
 export default function App() {
   const { user, logout } = useAuth();
@@ -112,6 +113,7 @@ export default function App() {
       </ProtectedRoute>
     }
   />
+  <Route path="/admin/courses/:id/enrollments" element={<AdminCourseEnrollments />} />
   <Route path="/courses/:id" element={<CourseDetail />} />
   <Route path="/register" element={<Register />} />
 

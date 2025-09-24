@@ -28,8 +28,9 @@ export default function Login() {
         <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <button >Login</button>
       </form>
-      <p style={{ marginTop: 10, opacity: 0.8 }}>Admin: admin@demo.com / Admin@123</p>
-      <p style={{ opacity: 0.8 }}>Student: student@demo.com / Student@123</p>
+     <p style={{ marginTop: 10, opacity: 0.8 }}>Admin: admin@mini.com / Admin@123</p>
+<p style={{ opacity: 0.8 }}>Student: student@mini.com / Student@123</p>
+
     </div>
   );
 }

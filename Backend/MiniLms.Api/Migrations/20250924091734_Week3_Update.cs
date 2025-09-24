@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MiniLms.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Week3_Update : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -47,6 +47,46 @@ namespace MiniLms.Api.Migrations
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Enrollments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CourseId = table.Column<int>(type: "INTEGER", nullable: false),
+                    EnrolledAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Progress = table.Column<int>(type: "INTEGER", nullable: false),
+                    LastAccessedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Enrollments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Enrollments_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Enrollments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Enrollments_CourseId",
+                table: "Enrollments",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Enrollments_UserId_CourseId",
+                table: "Enrollments",
+                columns: new[] { "UserId", "CourseId" },
+                unique: true);
+
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
@@ -57,6 +97,9 @@ namespace MiniLms.Api.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Enrollments");
+
             migrationBuilder.DropTable(
                 name: "Courses");
 

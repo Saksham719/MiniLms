@@ -1,57 +1,71 @@
-using System.Text;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MiniLms.Api.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB
-builder.Services.AddDbContext<AppDb>(o =>
-  o.UseSqlite(builder.Configuration.GetConnectionString("Default"))
-);
-
-// JSON enum names
-builder.Services.ConfigureHttpJsonOptions(opts => {
-  opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+// 1) CORS
+const string ViteDevCors = "ViteDevCors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(ViteDevCors, policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173") // your Vite dev server
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+            // If you ever send cookies: add .AllowCredentials() and DO NOT use AllowAnyOrigin()
+    });
 });
 
-// CORS for Vite dev server
-builder.Services.AddCors(opt => opt.AddDefaultPolicy(p =>
-  p.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()
-));
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// AuthN (JWT)
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+
 var jwt = builder.Configuration.GetSection("Jwt");
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-  .AddJwtBearer(o => {
-    o.TokenValidationParameters = new TokenValidationParameters {
-      ValidateIssuer = true,
-      ValidateAudience = true,
-      ValidateIssuerSigningKey = true,
-      ValidateLifetime = true,
-      ValidIssuer = jwt["Issuer"],
-      ValidAudience = jwt["Audience"],
-      IssuerSigningKey = key
-    };
-  });
+    .AddJwtBearer(opts =>
+    {
+        opts.TokenValidationParameters = new()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwt["Issuer"],
+            ValidAudience = jwt["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
+        };
+    });
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Seed at startup
-using (var scope = app.Services.CreateScope()) {
-  var db = scope.ServiceProvider.GetRequiredService<AppDb>();
-  Seed.Ensure(db);
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseCors();
+app.UseHttpsRedirection();
+
+// 2) Enable CORS BEFORE auth/authorization
+app.UseCors(ViteDevCors);
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
+// Optional: migrations + seed
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+    DbSeeder.Seed(db);
+}
+
 app.Run();

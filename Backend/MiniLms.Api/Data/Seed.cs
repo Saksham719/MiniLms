@@ -3,7 +3,7 @@ using MiniLms.Api.Models;
 namespace MiniLms.Api.Data;
 
 public static class Seed {
-  public static void Ensure(AppDb db) {
+  public static void Ensure(AppDbContext db) {
     db.Database.EnsureCreated();
 
     if (!db.Users.Any()) {

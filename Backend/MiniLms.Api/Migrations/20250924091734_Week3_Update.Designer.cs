@@ -10,9 +10,9 @@ using MiniLms.Api.Data;
 
 namespace MiniLms.Api.Migrations
 {
-    [DbContext(typeof(AppDb))]
-    [Migration("20250903082358_init")]
-    partial class init
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20250924091734_Week3_Update")]
+    partial class Week3_Update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,37 @@ namespace MiniLms.Api.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("MiniLms.Api.Models.Enrollment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EnrolledAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastAccessedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Progress")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId", "CourseId")
+                        .IsUnique();
+
+                    b.ToTable("Enrollments");
+                });
+
             modelBuilder.Entity("MiniLms.Api.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -84,6 +115,25 @@ namespace MiniLms.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MiniLms.Api.Models.Enrollment", b =>
+                {
+                    b.HasOne("MiniLms.Api.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiniLms.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

@@ -31,14 +31,14 @@ export default function AdminCourseList() {
               {c.category} · {c.level}
             </p>
             <p>{c.description?.slice(0, 100)}...</p>
-            <div style={{ display: "flex", gap: 22, marginTop: 16 }}>
-              <Link to={`/admin/courses/${c.id}`} className="btn btn-edit">
-                Edit
-              </Link>
-              <button onClick={() => remove(c.id)} className="btn btn-delete">
-                Delete
-              </button>
-            </div>
+<div style={{ display: "flex", gap: 22, marginTop: 16 }}>
+  <Link to={`/admin/courses/${c.id}`} className="btn btn-edit">Edit</Link>
+  <Link to={`/admin/courses/${c.id}/enrollments`} className="btn btn-primary">
+    View Enrollments
+  </Link>
+  <button onClick={() => remove(c.id)} className="btn btn-delete">Delete</button>
+</div>
+
           </div>
         ))}
         {!data?.items?.length && <div className="empty">No courses found</div>}
