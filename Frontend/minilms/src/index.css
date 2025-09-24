@@ -365,7 +365,7 @@ body{ background: var(--bg); color: var(--text); }
 .btn {
   height: 38px; padding: 0 14px; display:inline-flex; align-items:center; justify-content:center;
   font-weight: 600; border-radius: var(--radius-sm); cursor:pointer; border:1px solid transparent;
-  background: var(--panel); color: black;
+  background: var(--panel); color: e8ecf5;
 }
 
 .btn-view{
@@ -387,8 +387,12 @@ body{ background: var(--bg); color: var(--text); }
 .btn-primary:hover { background: var(--brand-2); }
 .btn-success { background: rgba(16,185,129,.12); color:#34d399; border-color: rgba(16,185,129,.25);}
 .btn-danger  { background: rgba(239,68,68,.12);  color:#f87171; border-color: rgba(239,68,68,.25);}
-.btn-ghost   { background: transparent; border:1px solid var(--border);}
-.btn-sm { height:32px; padding:0 10px; font-weight:600; border-radius: 8px; }
+.btn-ghost {
+  background: rgba(255,255,255,.06);
+  border: 1px solid #2b3446;
+  color: #e8ecf5;
+  box-shadow: 0 1px 0 rgba(0,0,0,.25);
+}.btn-sm { height:32px; padding:0 10px; font-weight:600; border-radius: 8px; }
 .icon-gap { display:inline-flex; align-items:center; gap:8px; }
 
 /* Cards & grid */

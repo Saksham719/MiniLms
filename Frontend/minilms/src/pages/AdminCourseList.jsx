@@ -1,3 +1,4 @@
+// src/pages/AdminCourseList.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/client";
@@ -37,11 +38,12 @@ export default function AdminCourseList() {
           pageSize: PAGE_SIZE,
         },
       });
-      return res.data; // { total, items, page, pageSize }
+      return res.data; // { total, page, pageSize, items }
     },
     keepPreviousData: true,
   });
 
+  const items = data?.items ?? [];
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -49,7 +51,7 @@ export default function AdminCourseList() {
     if (!confirm("Delete this course?")) return;
     await api.delete(`/courses/${id}`);
     toast.success("Course deleted");
-    if ((data?.items?.length ?? 0) === 1 && page > 1) setPage((p) => p - 1);
+    if (items.length === 1 && page > 1) setPage((p) => p - 1);
     qc.invalidateQueries({ queryKey: ["admin-courses"] });
   };
 
@@ -62,9 +64,7 @@ export default function AdminCourseList() {
           <h2 className="page-title">Courses</h2>
           <p className="page-sub">Manage your catalog, enrollments, and visibility</p>
         </div>
-        <Link to="/admin/courses/new" className="btn btn-primary icon-gap">
-          <span>＋</span> <span>Add New Course</span>
-        </Link>
+        <Link to="/admin/courses/new" className="btn btn-primary">+ Add New Course</Link>
       </div>
 
       <div className="toolbar">
@@ -73,6 +73,7 @@ export default function AdminCourseList() {
           placeholder="Search title…"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          style={{ flex: "1 1 280px", minWidth: 240 }}
         />
         <select
           className="select-light"
@@ -80,8 +81,8 @@ export default function AdminCourseList() {
           onChange={(e) => { setCategory(e.target.value); setPage(1); }}
         >
           <option value="">All categories</option>
-          <option>Programming</option>
-          <option>Web Development</option>
+          <option value="Programming">Programming</option>
+          <option value="Web Development">Web Development</option>
         </select>
         <select
           className="select-light"
@@ -89,51 +90,58 @@ export default function AdminCourseList() {
           onChange={(e) => { setLevel(e.target.value); setPage(1); }}
         >
           <option value="">All levels</option>
-          <option>Beginner</option>
-          <option>Intermediate</option>
-          <option>Advanced</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
         </select>
-        <button className="btn-reset" onClick={reset}>Reset</button>
+        <button className="btn btn-ghost" onClick={reset}>Reset</button>
       </div>
 
       {isLoading && (
-        <div className="grid">{Array.from({ length: PAGE_SIZE }).map((_, i) => <div key={i} className="skeleton" />)}</div>
+        <div className="grid">
+          {Array.from({ length: PAGE_SIZE }).map((_, i) => <div key={i} className="skeleton" />)}
+        </div>
       )}
 
       {isError && <div className="empty">Couldn’t load courses. Try again.</div>}
 
       {!isLoading && !isError && (
         <>
+          {/* Courses grid */}
           <div className="grid">
-            {(data?.items ?? []).map((c) => (
-              <div key={c.id} className="card">
+            {items.map((course) => (
+              <div key={course.id} className="card">
                 <div className="card-head">
-                  <h3 className="card-title" title={c.title}>{c.title}</h3>
-                  <span className={`badge ${c.isPublished ? "ok" : ""}`}>
-                    {c.isPublished ? "Published" : "Draft"}
+                  <h3 className="card-title" title={course.title}>{course.title}</h3>
+                  <span className={`badge ${course.isPublished ? "ok" : ""}`}>
+                    {course.isPublished ? "Published" : "Draft"}
                   </span>
                 </div>
 
-                <div className="card-meta">{c.category || "—"} • {c.level || "—"}</div>
+                <div className="card-meta">
+                  {course.category || "—"} • {course.level || "—"}
+                </div>
+
                 <div className="card-desc">
-                  {(c.description || "No description").slice(0, 140)}
-                  {c.description && c.description.length > 140 ? "…" : ""}
+                  {(course.description || "No description").slice(0, 140)}
+                  {course.description && course.description.length > 140 ? "…" : ""}
                 </div>
 
                 <div className="card-meta">
-                  {c.durationMinutes ?? 0} mins • Created {new Date(c.createdAt).toLocaleDateString()}
+                  {course.durationMinutes ?? 0} mins • Created {new Date(course.createdAt).toLocaleDateString()}
                 </div>
 
                 <div className="card-actions">
-                  <Link to={`/admin/courses/${c.id}`} className="btn btn-ghost">Edit</Link>
-                  <Link to={`/admin/courses/${c.id}/enrollments`} className="btn btn-primary">View Enrollments</Link>
-                  <button onClick={() => remove(c.id)} className="btn btn-danger">Delete</button>
+                  <Link to={`/admin/courses/${course.id}`} className="btn btn-ghost">Edit</Link>
+                  <Link to={`/admin/courses/${course.id}/enrollments`} className="btn btn-primary">View Enrollments</Link>
+                  <Link to={`/admin/courses/${course.id}/materials`} className="btn btn-ghost">Materials</Link>
+                  <button onClick={() => remove(course.id)} className="btn btn-danger">Delete</button>
                 </div>
               </div>
             ))}
           </div>
 
-          {(data?.items?.length ?? 0) === 0 && <div className="empty">No courses found. Adjust filters.</div>}
+          {items.length === 0 && <div className="empty">No courses found. Adjust filters.</div>}
 
           <div className="pager">
             <button className="btn btn-ghost btn-sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>← Prev</button>

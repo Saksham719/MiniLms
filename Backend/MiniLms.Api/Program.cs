@@ -60,6 +60,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseStaticFiles();         // serve /uploads/...
+app.UseCors("ViteDevCors");   // your existing policy allowing http://localhost:5173
 
 // optional: basic DB seed on first run
 using (var scope = app.Services.CreateScope())

@@ -10,6 +10,7 @@ import CourseDetail from "./pages/CourseDetail";
 import AdminCourseList from "./pages/AdminCourseList";
 import AdminCourseForm from "./pages/AdminCourseForm";
 import AdminCourseEnrollments from "./pages/AdminCourseEnrollments";  
+import AdminCourseMaterials from "./pages/AdminCourseMaterials";
 
 export default function App() {
   const { user, logout } = useAuth();
@@ -78,7 +79,8 @@ export default function App() {
 
  
 
-  {/* =======================
+  {
+  /* =======================
         USER INFO SECTION (Logged in)
   ======================= */}
   {user && (
@@ -113,6 +115,8 @@ export default function App() {
       </ProtectedRoute>
     }
   />
+  <Route path="/admin/courses/:id/materials" element={<AdminCourseMaterials />} />
+
   <Route path="/admin/courses/:id/enrollments" element={<AdminCourseEnrollments />} />
   <Route path="/courses/:id" element={<CourseDetail />} />
   <Route path="/register" element={<Register />} />
